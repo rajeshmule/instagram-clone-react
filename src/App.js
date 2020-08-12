@@ -4,6 +4,7 @@ import Post from "./Post";
 import { db, auth } from "./firebase";
 import { makeStyles } from "@material-ui/core/styles";
 import { Button, Modal } from "@material-ui/core";
+import ImageUpload from "./ImageUpload";
 
 function rand() {
   return Math.round(Math.random() * 20) - 10;
@@ -45,7 +46,7 @@ function App() {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((authUser) => {
       if (authUser) {
-        console.log(authUser);
+        // console.log(authUser);
         setUser(authUser);
         if (authUser.displayName) {
         } else {
@@ -61,14 +62,16 @@ function App() {
   }, [user, username]);
 
   useEffect(() => {
-    db.collection("posts").onSnapshot((snapshot) => {
-      setPosts(
-        snapshot.docs.map((doc) => ({
-          id: doc.id,
-          post: doc.data(),
-        }))
-      );
-    });
+    db.collection("posts")
+      .orderBy("timestamp", "desc")
+      .onSnapshot((snapshot) => {
+        setPosts(
+          snapshot.docs.map((doc) => ({
+            id: doc.id,
+            post: doc.data(),
+          }))
+        );
+      });
   }, []);
 
   const signUp = (event) => {
@@ -89,6 +92,7 @@ function App() {
       .catch((error) => alert(error.message));
     setOpenSignIn(false);
   };
+
   return (
     <div className="app">
       <Modal open={open} onClose={() => setOpen(false)}>
@@ -159,17 +163,19 @@ function App() {
           src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png"
           alt="instagram"
         />
+        {user ? (
+          <div>
+            <Button onClick={() => auth.signOut()}>Logout</Button>
+            {/* <div>{user?.displayName ? user.displayname : ""}</div> */}
+          </div>
+        ) : (
+          <div className="app__loginContainer">
+            <Button onClick={() => setOpenSignIn(true)}>Sign In</Button>
+
+            <Button onClick={() => setOpen(true)}>Sign Up</Button>
+          </div>
+        )}
       </div>
-      {user ? (
-        <Button onClick={() => auth.signOut()}>Logout</Button>
-      ) : (
-        <div className="app__loginContainer">
-          <Button onClick={() => setOpenSignIn(true)}>Sign In</Button>
-
-          <Button onClick={() => setOpen(true)}>Sign Up</Button>
-        </div>
-      )}
-
       {posts.map(({ id, post }) => (
         <Post
           key={id}
@@ -178,6 +184,13 @@ function App() {
           imageUrl={post.imageUrl}
         />
       ))}
+      {user?.displayName ? (
+        <div>
+          <ImageUpload username={user.displayName} />
+        </div>
+      ) : (
+        <h3>Sorry you need to login</h3>
+      )}
     </div>
   );
 }
