@@ -7,6 +7,9 @@
   height: 100%;
 }
 .app__header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
   background-color: white;
   padding: 20px;
   border-bottom: 1px solid lightgray;
@@ -19,4 +22,14 @@
   display: flex;
   text-align: center;
   flex-direction: column;
+}
+
+.app__headerImage {
+  object-fit: contain;
+}
+
+.app__posts {
+  padding: 10px;
+  display: flex;
+  justify-content: center;
 }
