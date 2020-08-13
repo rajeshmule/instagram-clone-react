@@ -5,7 +5,6 @@ import { db, auth } from "./firebase";
 import { makeStyles } from "@material-ui/core/styles";
 import { Button, Modal } from "@material-ui/core";
 import ImageUpload from "./ImageUpload";
-import InstagramEmbed from "react-instagram-embed";
 
 function rand() {
   return Math.round(Math.random() * 20) - 10;
